@@ -1,0 +1,156 @@
+알고리즘
+	어떤 문제가 발생되었을 때 해결할 수 있는 절차 혹은 순서
+
+자료구조
+	의미 없는 데이터를 하나의 정보로 만들어주는 알고리즘들의 집합
+	수집한 자료를 저장하는 하나의 방법
+
+컬렉션 프레임워크(Collection Framework)
+	많은 데이터를 쉽고 효과적으로 관리할 수 있는 표준화된 방법을 제공하는 클래스들의 집합
+
+1. List extends Collection
+	- Vector : 용량 관리, 보안성 강화, 처리량 감소
+	- LinkedList : FILO로 인해 넣을 때는 빨라도 워하는 위치의 데이터를 가져오는것이다.
+	- ArrayList : 인덱스러 데이터 들을 관리한다. 컬렉션 클래스중 실무에서 가장 많이 사용되는 클래스이다'		
+			배열의 특징은 인덱스를 이용하여 값을 저장하고 관리한다.
+		
+			※ 배열과 ArrayList의 차이
+					배열은 길이에 제한을 두어야 할 때 자주 사용되고.
+					ArrayList 는 몇개의 데이터가 들어올 지 알 수 없을 때 사용한다.
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+
+2. Set
+
+3. Map
+
+
+------------------------------------------------------------------------------------------------------------------------------
+package collectionTask;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Random;
+
+import org.json.simple.JSONObject;
+
+import net.nurigo.java_sdk.api.Message;
+import net.nurigo.java_sdk.exceptions.CoolsmsException;
+
+public class UserField {
+
+//    회원 정보를 담을 DB를 ArrayList로 선언
+   public ArrayList<User> userDB(User user) {
+      ArrayList<User> userDB = new ArrayList<User>();
+      userDB.add(user);
+      
+      return userDB;
+   }
+//   아이디 중복검사
+   public boolean idCheck(User user, String id) {
+      ArrayList<User> userDB = userDB(user);
+      for (int i = 0; i < userDB.size(); i++) {
+         if(userDB.get(i).getId().equals(id)) {
+            return true;
+         }
+      }
+      return false;
+   }
+//    회원가입
+   public User sign(User user, String name, String id, String password, String phoneNumber) {
+         user.setId(id);
+         user.setName(name);
+         user.setPassword(encry(password));
+         user.setPhoneNumber(phoneNumber);
+         
+      return user;
+   }
+   
+//   로그인
+   public boolean login(User user, String id, String password) {
+      ArrayList<User> userDB = userDB(user);
+      for (int i = 0; i < userDB.size(); i++) {
+         if(userDB.get(i).getId().equals(id) && userDB.get(i).getPassword().equals(encry(password))) {
+            return true;
+         }
+      }
+      return false;
+   }
+   
+//   암호화
+   public String encry(String password) {
+      String encryPw = "";
+       for (int i = 0; i < password.length(); i++) {
+         encryPw += (char)(password.charAt(i) + 99);
+      }
+      return encryPw;
+   }
+   
+//   비밀번호 변경(비밀번호 찾기 서비스)
+   public String pwChange(ArrayList<User> userDB,User user) {
+      String encryPw = null;
+      String password = null;
+      for (int i = 0; i < userDB.size(); i++) {
+         if(userDB.get(i).getPhoneNumber() == user.getPhoneNumber()) {
+            encryPw = user.getPassword();
+            break;
+         }
+      }
+      
+      for (int i = 0; i < password.length(); i++) {
+         password += (char)(password.charAt(i) - 99);
+      }
+      
+      return password;
+      
+   }
+//   인증번호 전송
+   public String smsCheck(User user,String phonNumber) {
+      final int SEND_NUMBER = 4;
+      Random r = new Random();
+      String number = "";
+      ArrayList<User> userDB = userDB(user);
+      String sendPhone = null;
+//      랜덤 인증번호 4자리
+      for (int i = 0; i < SEND_NUMBER; i++) {
+         number += r.nextInt(10);
+      }
+      
+      System.out.println(number);
+      
+      for (int i = 0; i < userDB.size(); i++) {
+         if(userDB.get(i).getPhoneNumber().equals(phonNumber)) {
+            sendPhone = phonNumber;
+            return number;
+         }
+      }
+      return null;
+//      String api_key = "NCSGDKSNDYTMCT5V";
+//          String api_secret = "XHPDA2WDFAT5S3JGDF1A4SROWRWZXD5E";
+//          Message coolsms = new Message(api_key, api_secret);
+//
+//          // 4 params(to, from, type, text) are mandatory. must be filled
+//          HashMap<String, String> params = new HashMap<String, String>();
+//          params.put("to", sendPhone);
+//          params.put("from", sendPhone );
+//          params.put("type", "SMS");
+//          params.put("text", "문자 발송 테스트");
+//          params.put("app_version", "test app 1.2"); // application name and version
+//
+//          try {
+//            JSONObject obj = (JSONObject) coolsms.send(params);
+//            System.out.println(obj.toString());
+//          } catch (CoolsmsException e) {
+//            System.out.println(e.getMessage());
+//            System.out.println(e.getCode());
+//          }
+      
+   }
+   
+   // 인증번호 확인
+   public boolean check(String number,User user, String phonNumber ) {
+      
+   }
+   
+}
